@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=GUIEstacionamiento
+comment1.params=e
+comment1.target=GUIEstacionamiento(Estacionamiento)
+comment2.params=
+comment2.target=void\ inicializarpanelEstacionamiento()
+comment3.params=
+comment3.target=void\ inicializarpanelCochera()
+comment4.params=
+comment4.target=void\ inicializarpanelPrincipal()
+comment5.params=ruta\ ancho\ alto
+comment5.target=javax.swing.ImageIcon\ escalarIcono(java.lang.String,\ int,\ int)
+numComments=6

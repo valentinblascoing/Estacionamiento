@@ -1,0 +1,17 @@
+#BlueJ class context
+comment0.target=Hora
+comment1.params=h\ m
+comment1.target=Hora(int,\ int)
+comment2.params=c
+comment2.target=void\ establecerHora(int)
+comment3.params=c
+comment3.target=void\ establecerMinutos(int)
+comment4.params=
+comment4.target=int\ obtenerHora()
+comment5.params=
+comment5.target=int\ obtenerMinutos()
+comment6.params=c
+comment6.target=int\ diferenciaMinutos(Hora)
+comment7.params=
+comment7.target=java.lang.String\ toString()
+numComments=8

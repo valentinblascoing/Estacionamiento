@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=Vehiculo
+comment1.params=i\ n\ p
+comment1.target=Vehiculo(Hora,\ int,\ java.lang.String)
+comment2.params=c
+comment2.target=void\ egresaVehiculo(Hora)
+comment3.params=
+comment3.target=Hora\ obtenerIngreso()
+comment4.params=
+comment4.target=Hora\ obtenerEgreso()
+comment5.params=
+comment5.target=int\ obtenerNumero()
+comment6.params=
+comment6.target=java.lang.String\ obtenerPatente()
+comment7.params=
+comment7.target=java.lang.String\ toString()
+comment8.params=t
+comment8.target=int\ obteneraCobrar(Tarifa)
+numComments=9
