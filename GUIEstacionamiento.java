@@ -3,8 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.image.BufferedImage;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+
 import javax.swing.text.MaskFormatter;
 import java.time.LocalTime;
 
@@ -59,6 +58,16 @@ public class GUIEstacionamiento extends JFrame{
         getContentPane().add(panelEstacionamiento, BorderLayout.NORTH);
         getContentPane().add(panelCochera, BorderLayout.EAST);
         getContentPane().add(panelPrincipal, BorderLayout.WEST);
+
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+            .put(KeyStroke.getKeyStroke("ESCAPE"), "cerrar");
+
+        getRootPane().getActionMap().put("cerrar", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
         
         this.setVisible(true);
         this.setResizable(false);
@@ -74,6 +83,22 @@ public class GUIEstacionamiento extends JFrame{
         //Crea el arreglo de botones
         cocheras = new JButton[estacionamiento.cantCocheras()];
         
+        for(int i = 0; i < estacionamiento.cantCocheras(); i++){
+            int numeroCochera = i + 1;
+
+            JButton boton = new JButton("Cochera " + numeroCochera);
+
+            boton.setVerticalAlignment(SwingConstants.BOTTOM);
+            boton.setHorizontalAlignment(SwingConstants.CENTER);
+            boton.setIcon(escalarIcono("imagenes/parking-libre.png", 80, 80));
+            boton.setBackground(Color.WHITE);
+
+            boton.addActionListener(new OyenteCochera());
+            boton.setActionCommand(String.valueOf(numeroCochera));
+
+            cocheras[i] = boton;
+            panelEstacionamiento.add(boton);
+        }
         /*
            - Se crea cada uno de los botones correspondientes a la cochera
            - Se modifica el texto, la posicion del texto (centro-abajo), el color 
@@ -92,6 +117,17 @@ public class GUIEstacionamiento extends JFrame{
         panelCochera.setBorder(BorderFactory.createEmptyBorder(80, 10, 10, 10));
         panelCochera.setLayout(new BorderLayout()); 
         panelCochera.setBackground(Color.WHITE);
+
+        etiqueCocheraSeleccionada = new JLabel("Seleccione una cochera", SwingConstants.CENTER);
+        etiqueCocheraSeleccionada.setVerticalAlignment(SwingConstants.TOP);
+
+        JButton botonFinalizar = new JButton("Finalizar estacionamiento");
+        botonFinalizar.setEnabled(false);
+        botonFinalizar.addActionListener(new OyenteFinalizarReserva());
+
+        panelCochera.add(etiqueCocheraSeleccionada, BorderLayout.CENTER);
+        panelCochera.add(botonFinalizar, BorderLayout.SOUTH);
+
         
         /*
            - Crea la etiqueta de la cochera seleccionada
