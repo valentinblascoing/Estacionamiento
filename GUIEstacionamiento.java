@@ -83,22 +83,38 @@ public class GUIEstacionamiento extends JFrame {
         // Crea el arreglo de botones
         cocheras = new JButton[estacionamiento.cantCocheras()];
 
-        OyenteCochera[] oyentesCocheras = new OyenteCochera[estacionamiento.cantCocheras()];
-
         for (int i = 0; i < estacionamiento.cantCocheras(); i++) {
-            getContentPane().setLayout(new FlowLayout());
+            /* getContentPane().setLayout(new FlowLayout()); */
             /* cocheras[i] = new JButton(""+(i+1) , new ImageIcon("imagenes/parking-libre.png")); */
-            cocheras[i] = new JButton(""+(i+1) , escalarIcono("imagenes/parking-libre.png", 80, 80));
-            cocheras[i].setBackground(Color.WHITE);
-            oyentesCocheras[i] = new OyenteCochera();
-            cocheras[i].addActionListener(oyentesCocheras[i]);
-            cocheras[i].setPreferredSize(new Dimension(90, 130));
-            cocheras[i].setHorizontalAlignment(JLabel.CENTER);
-            cocheras[i].setVerticalAlignment(JLabel.CENTER);
-            cocheras[i].setHorizontalTextPosition(JLabel.CENTER);
-            cocheras[i].setVerticalTextPosition(JLabel.BOTTOM);
-            panelEstacionamiento.add(cocheras[i]);
-            this.setVisible(true);
+
+            JButton boton = new JButton("" + (i + 1));
+            
+            boton.setIcon(escalarIcono("imagenes/parking-libre.png", 80, 80));
+            boton.setBackground(Color.WHITE);
+
+            boton.addActionListener(new OyenteCochera());
+
+            boton.setHorizontalTextPosition(JLabel.CENTER);
+            boton.setVerticalTextPosition(JLabel.BOTTOM);
+
+            cocheras[i] = boton;
+            panelEstacionamiento.add(boton);
+
+            /* int numeroCochera = i + 1; // las cocheras son 1-indexadas en Estacionamiento
+
+            JButton boton = new JButton("Cochera " + numeroCochera); //crea el botón con el número de cochera
+            boton.setVerticalTextPosition(SwingConstants.BOTTOM); //ubica el texto debajo del ícono
+            boton.setHorizontalTextPosition(SwingConstants.CENTER); //centra el texto horizontalmente
+            boton.setBackground(Color.WHITE); //define el color de fondo del botón
+            boton.setIcon(escalarIcono("imagenes/parking-libre.png", 80, 80)); //le pone el ícono de cochera libre
+
+            boton.addActionListener(new OyenteCochera()); //registra el oyente de clic para este botón
+
+            // Usamos el ActionCommand para poder identificar la cochera dentro del oyente
+            boton.setActionCommand(String.valueOf(numeroCochera)); //guarda el número de cochera en el botón
+
+            cocheras[i] = boton; //guarda el botón en el arreglo de cocheras
+            panelEstacionamiento.add(boton); //agrega el botón al panel */
         }
         /*
          * - Se crea cada uno de los botones correspondientes a la cochera
@@ -272,6 +288,7 @@ public class GUIEstacionamiento extends JFrame {
                 etiqueCocheraSeleccionada.setText(estacionamiento.consultarVehiculo(numeroCocheraSeleccionada));
                 nroCochera.setText("Seleccionar cochera"); // muestra los datos del vehículo
             } else {
+                botonIngresar.setEnabled(true);
                 botonFinalizar.setEnabled(false); // deshabilita el botón si la cochera está libre
                // muestra que la cochera está libre
             }
