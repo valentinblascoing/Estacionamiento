@@ -23,6 +23,7 @@ public class GUIEstacionamiento extends JFrame {
     // PANEL INFORMACION COCHERA SELECCIONADA
     private JPanel panelCochera;
     private JLabel etiqueCocheraSeleccionada;
+    private JButton botonFinalizar; // guarda el botón para finalizar la reserva
 
     // PANEL PRINCIPAL
     private JPanel panelPrincipal;
@@ -81,21 +82,21 @@ public class GUIEstacionamiento extends JFrame {
         // Crea el arreglo de botones
         cocheras = new JButton[estacionamiento.cantCocheras()];
 
+        OyenteCochera[] oyentesCocheras = new OyenteCochera[estacionamiento.cantCocheras()];
+
         for (int i = 0; i < estacionamiento.cantCocheras(); i++) {
-            int numeroCochera = i + 1;
-
-            JButton boton = new JButton(String.valueOf(numeroCochera));
-
-            boton.setIcon(escalarIcono("imagenes/parking-libre.png", 80, 80));
-            boton.setVerticalTextPosition(SwingConstants.BOTTOM);
-            boton.setHorizontalTextPosition(SwingConstants.CENTER);
-            boton.setBackground(Color.GREEN);
-
-            boton.addActionListener(new OyenteCochera());
-            boton.setActionCommand(String.valueOf(numeroCochera));
-
-            cocheras[i] = boton;
-            panelEstacionamiento.add(boton);
+            getContentPane().setLayout(new FlowLayout());
+            /* cocheras[i] = new JButton(""+(i+1) , new ImageIcon("imagenes/parking-libre.png")); */
+            cocheras[i] = new JButton(""+(i+1) , escalarIcono("imagenes/parking-libre.png", 80, 80));
+            oyentesCocheras[i] = new OyenteCochera();
+            cocheras[i].addActionListener(oyentesCocheras[i]);
+            cocheras[i].setPreferredSize(new Dimension(90, 130));
+            cocheras[i].setHorizontalAlignment(JLabel.CENTER);
+            cocheras[i].setVerticalAlignment(JLabel.CENTER);
+            cocheras[i].setHorizontalTextPosition(JLabel.CENTER);
+            cocheras[i].setVerticalTextPosition(JLabel.BOTTOM);
+            panelEstacionamiento.add(cocheras[i]);
+            this.setVisible(true);
         }
         /*
          * - Se crea cada uno de los botones correspondientes a la cochera
@@ -119,9 +120,9 @@ public class GUIEstacionamiento extends JFrame {
         etiqueCocheraSeleccionada = new JLabel("Seleccione una cochera", SwingConstants.CENTER);
         etiqueCocheraSeleccionada.setVerticalAlignment(SwingConstants.TOP);
 
-        JButton botonFinalizar = new JButton("Finalizar estacionamiento");
-        botonFinalizar.setEnabled(false);
-        botonFinalizar.addActionListener(new OyenteFinalizarReserva());
+        botonFinalizar = new JButton("Finalizar estacionamiento"); // crea el botón de finalización
+        botonFinalizar.setEnabled(false); // lo deja deshabilitado al inicio
+        botonFinalizar.addActionListener(new OyenteFinalizarReserva()); // registra el oyente del botón
 
         panelCochera.add(etiqueCocheraSeleccionada, BorderLayout.CENTER);
         panelCochera.add(botonFinalizar, BorderLayout.SOUTH);
@@ -230,6 +231,19 @@ public class GUIEstacionamiento extends JFrame {
              * - Si la cochera esta libre, se habilita el boton,
              * y las etiquetas correspondientes (VER IMAGENES DEL ENUNCIADO).
              */
+            JButton cocheraSeleccionada = (JButton) e.getSource(); // obtiene la cochera clickeada
+            numeroCocheraSeleccionada = Integer.parseInt(cocheraSeleccionada.getText()); // guarda el número de la cochera
+            nroCochera.setText(String.valueOf(numeroCocheraSeleccionada)); // muestra la cochera seleccionada
+
+            horaEgreso.setText("Sin egreso"); // reinicia la hora de egreso al cambiar de cochera
+
+            if (estacionamiento.obtenerVehiculo(numeroCocheraSeleccionada) != null) { // verifica si la cochera está ocupada
+                botonFinalizar.setEnabled(true); // habilita el botón de finalizar
+                etiqueCocheraSeleccionada.setText(estacionamiento.consultarVehiculo(numeroCocheraSeleccionada)); // muestra los datos del vehículo
+            } else {
+                botonFinalizar.setEnabled(false); // deshabilita el botón si la cochera está libre
+                etiqueCocheraSeleccionada.setText("Cochera " + numeroCocheraSeleccionada + " libre"); // muestra que la cochera está libre
+            }
         }
     }
 
@@ -246,34 +260,69 @@ public class GUIEstacionamiento extends JFrame {
                 JOptionPane.showMessageDialog(null, "Debe ingresar una hora de ingreso y patente valida.", "Error",
                         JOptionPane.ERROR_MESSAGE);
             } else {
-                /*
-                 * - Si los datos son correctos, se debe crear un nuevo
-                 * vehiculo para ingresar en el estacionamiento.
-                 * - Este vehiculo se crea con la hora de ingreso, numero
-                 * de cochera seleccionada y patente.
-                 * - Se modifica el icono del boton de la cochera correspondiente
-                 * a "parking-ocupado.png"
-                 * - Se muestra un mensaje de dialogo tal como se observa en las imagenes del
-                 * enunciad
-                 * - Se reinician todas las etiquetas al valor inicial (hora ingreso, nroCochera
-                 * y patente) asi como el boton ingresar.
-                 */
+                String[] partes = hora_min_ingreso.split(":");
+                int hora = Integer.parseInt(partes[0]);
+                int minutos = Integer.parseInt(partes[1]);
+
+                if (hora > 24 || (hora == 24 && minutos > 0)) {
+                    JOptionPane.showMessageDialog(null, "Debe ingresar una hora de ingreso y patente valida.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    /*
+                     * - Si los datos son correctos, se debe crear un nuevo
+                     * vehiculo para ingresar en el estacionamiento.
+                     * - Este vehiculo se crea con la hora de ingreso, numero
+                     * de cochera seleccionada y patente.
+                     * - Se modifica el icono del boton de la cochera correspondiente
+                     * a "parking-ocupado.png"
+                     * - Se muestra un mensaje de dialogo tal como se observa en las imagenes del
+                     * enunciad
+                     * - Se reinician todas las etiquetas al valor inicial (hora ingreso, nroCochera
+                     * y patente) asi como el boton ingresar.
+                     */
+
+                    Hora horaIngresoVehiculo = new Hora(hora, minutos); // crea el objeto de hora de ingreso
+                    Vehiculo vehiculo = new Vehiculo(horaIngresoVehiculo, numeroCocheraSeleccionada, pat); // crea el vehículo con los datos ingresados
+
+                    if (estacionamiento.ingresarVehiculo(vehiculo, numeroCocheraSeleccionada)) { // intenta asignar el vehículo a la cochera
+                        cocheras[numeroCocheraSeleccionada - 1].setIcon(escalarIcono("imagenes/parking-ocupado.png", 80, 80)); // cambia el icono a ocupado
+                        JOptionPane.showMessageDialog(null, "Ingreso registrado con exito", "Exito", JOptionPane.INFORMATION_MESSAGE); // muestra confirmación de ingreso
+
+                        horaIngreso.setText(""); // limpia el campo de hora
+                        patente.setText(""); // limpia el campo de patente
+                        nroCochera.setText("Seleccionar cochera"); // reinicia la etiqueta de cochera
+                        numeroCocheraSeleccionada = -1; // deja sin cochera seleccionada
+                        etiqueCocheraSeleccionada.setText("Seleccione una cochera"); // reinicia el texto de la cochera
+                        horaEgreso.setText("Sin egreso"); // reinicia la hora de egreso
+                    } else {
+                        JOptionPane.showMessageDialog(null, "La cochera seleccionada ya se encuentra ocupada.", "Error",
+                                JOptionPane.ERROR_MESSAGE); // muestra error si la cochera está ocupada
+                    }
+                }
             }
         }
     }
 
     private class OyenteFinalizarReserva implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            Vehiculo vehiculo = estacionamiento.obtenerVehiculo(numeroCocheraSeleccionada); // obtiene el vehículo de la cochera seleccionada
+            if (vehiculo != null) {
+                LocalTime horaActual = LocalTime.now(); // toma la hora actual del sistema
+                Hora horaSalida = new Hora(horaActual.getHour(), horaActual.getMinute()); // crea la hora de salida
+                vehiculo.egresaVehiculo(horaSalida); // marca el egreso del vehículo
 
-            /*
-             * - Se obtiene el vehiculo seleccionado y la hora actual local
-             * (ver LocalTime).
-             * - Se muestra el mensaje de dialogo con el total a abonar
-             * - Se establece la hora de egreso del vehiculo
-             * - Se modifica el icono del boton de la cochera correspondiente
-             * a "parking-libre.png"
-             * - Se reinician las etiquetas y botones al estado inicial.
-             */
+                int total = vehiculo.obteneraCobrar(tarifa); // calcula el total a pagar
+                JOptionPane.showMessageDialog(null, "Abonar: $" + total, "Finalizando estacionamiento", JOptionPane.INFORMATION_MESSAGE); // muestra el importe
+
+                estacionamiento.egresarVehiculo(numeroCocheraSeleccionada); // libera la cochera en el estacionamiento
+                cocheras[numeroCocheraSeleccionada - 1].setIcon(escalarIcono("imagenes/parking-libre.png", 80, 80)); // cambia el icono a libre
+
+                horaEgreso.setText(horaSalida.toString()); // muestra la hora de egreso
+                nroCochera.setText("Seleccionar cochera"); // reinicia la etiqueta de cochera
+                etiqueCocheraSeleccionada.setText("Seleccione una cochera"); // reinicia la información mostrada
+                numeroCocheraSeleccionada = -1; // deja sin cochera seleccionada
+                botonFinalizar.setEnabled(false); // deshabilita el botón de finalizar
+            }
         }
     }
 
