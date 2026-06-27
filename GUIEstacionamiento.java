@@ -272,6 +272,7 @@ public class GUIEstacionamiento extends JFrame {
                 etiqueCocheraSeleccionada.setText(estacionamiento.consultarVehiculo(numeroCocheraSeleccionada));
                 nroCochera.setText("Seleccionar cochera"); // muestra los datos del vehículo
             } else {
+                botonIngresar.setEnabled(true);
                 botonFinalizar.setEnabled(false); // deshabilita el botón si la cochera está libre
                // muestra que la cochera está libre
             }
