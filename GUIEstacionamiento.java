@@ -260,44 +260,39 @@ public class GUIEstacionamiento extends JFrame {
                 JOptionPane.showMessageDialog(null, "Debe ingresar una hora de ingreso y patente valida.", "Error",
                         JOptionPane.ERROR_MESSAGE);
             } else {
-                String[] partes = hora_min_ingreso.split(":");
-                int hora = Integer.parseInt(partes[0]);
-                int minutos = Integer.parseInt(partes[1]);
+                /*
+                 * - Si los datos son correctos, se debe crear un nuevo
+                 * vehiculo para ingresar en el estacionamiento.
+                 * - Este vehiculo se crea con la hora de ingreso, numero
+                 * de cochera seleccionada y patente.
+                 * - Se modifica el icono del boton de la cochera correspondiente
+                 * a "parking-ocupado.png"
+                 * - Se muestra un mensaje de dialogo tal como se observa en las imagenes del
+                 * enunciad
+                 * - Se reinician todas las etiquetas al valor inicial (hora ingreso, nroCochera
+                 * y patente) asi como el boton ingresar.
+                 */
 
-                if (hora > 24 || (hora == 24 && minutos > 0)) {
-                    JOptionPane.showMessageDialog(null, "Debe ingresar una hora de ingreso y patente valida.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                String[] partes = hora_min_ingreso.split(":"); // separa la hora ingresada en horas y minutos
+                int hora = Integer.parseInt(partes[0]); // convierte la hora a entero
+                int minutos = Integer.parseInt(partes[1]); // convierte los minutos a entero
+
+                Hora horaIngresoVehiculo = new Hora(hora, minutos); // crea el objeto de hora de ingreso
+                Vehiculo vehiculo = new Vehiculo(horaIngresoVehiculo, numeroCocheraSeleccionada, pat); // crea el vehículo con los datos ingresados
+
+                if (estacionamiento.ingresarVehiculo(vehiculo, numeroCocheraSeleccionada)) { // intenta asignar el vehículo a la cochera
+                    cocheras[numeroCocheraSeleccionada - 1].setIcon(escalarIcono("imagenes/parking-ocupado.png", 80, 80)); // cambia el icono a ocupado
+                    JOptionPane.showMessageDialog(null, "Ingreso registrado con exito", "Exito", JOptionPane.INFORMATION_MESSAGE); // muestra confirmación de ingreso
+
+                    horaIngreso.setText(""); // limpia el campo de hora
+                    patente.setText(""); // limpia el campo de patente
+                    nroCochera.setText("Seleccionar cochera"); // reinicia la etiqueta de cochera
+                    numeroCocheraSeleccionada = -1; // deja sin cochera seleccionada
+                    etiqueCocheraSeleccionada.setText("Seleccione una cochera"); // reinicia el texto de la cochera
+                    horaEgreso.setText("Sin egreso"); // reinicia la hora de egreso
                 } else {
-                    /*
-                     * - Si los datos son correctos, se debe crear un nuevo
-                     * vehiculo para ingresar en el estacionamiento.
-                     * - Este vehiculo se crea con la hora de ingreso, numero
-                     * de cochera seleccionada y patente.
-                     * - Se modifica el icono del boton de la cochera correspondiente
-                     * a "parking-ocupado.png"
-                     * - Se muestra un mensaje de dialogo tal como se observa en las imagenes del
-                     * enunciad
-                     * - Se reinician todas las etiquetas al valor inicial (hora ingreso, nroCochera
-                     * y patente) asi como el boton ingresar.
-                     */
-
-                    Hora horaIngresoVehiculo = new Hora(hora, minutos); // crea el objeto de hora de ingreso
-                    Vehiculo vehiculo = new Vehiculo(horaIngresoVehiculo, numeroCocheraSeleccionada, pat); // crea el vehículo con los datos ingresados
-
-                    if (estacionamiento.ingresarVehiculo(vehiculo, numeroCocheraSeleccionada)) { // intenta asignar el vehículo a la cochera
-                        cocheras[numeroCocheraSeleccionada - 1].setIcon(escalarIcono("imagenes/parking-ocupado.png", 80, 80)); // cambia el icono a ocupado
-                        JOptionPane.showMessageDialog(null, "Ingreso registrado con exito", "Exito", JOptionPane.INFORMATION_MESSAGE); // muestra confirmación de ingreso
-
-                        horaIngreso.setText(""); // limpia el campo de hora
-                        patente.setText(""); // limpia el campo de patente
-                        nroCochera.setText("Seleccionar cochera"); // reinicia la etiqueta de cochera
-                        numeroCocheraSeleccionada = -1; // deja sin cochera seleccionada
-                        etiqueCocheraSeleccionada.setText("Seleccione una cochera"); // reinicia el texto de la cochera
-                        horaEgreso.setText("Sin egreso"); // reinicia la hora de egreso
-                    } else {
-                        JOptionPane.showMessageDialog(null, "La cochera seleccionada ya se encuentra ocupada.", "Error",
-                                JOptionPane.ERROR_MESSAGE); // muestra error si la cochera está ocupada
-                    }
+                    JOptionPane.showMessageDialog(null, "La cochera seleccionada ya se encuentra ocupada.", "Error",
+                            JOptionPane.ERROR_MESSAGE); // muestra error si la cochera está ocupada
                 }
             }
         }
