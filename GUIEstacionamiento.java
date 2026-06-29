@@ -204,18 +204,6 @@ public class GUIEstacionamiento extends JFrame {
         botonIngresar.addActionListener(new OyenteIngresar());
         panelPrincipal.add(botonIngresar);
 
-        horaIngreso.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { actualizarEstadoBotonIngresar(); }
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { actualizarEstadoBotonIngresar(); }
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { actualizarEstadoBotonIngresar(); }
-        });
-
-        patente.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { actualizarEstadoBotonIngresar(); }
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { actualizarEstadoBotonIngresar(); }
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { actualizarEstadoBotonIngresar(); }
-        });
-
         /*
          * - Se crean las restantes etiquetas, campos de texto y botones
          * correspondientes al panel principal.
@@ -229,14 +217,6 @@ public class GUIEstacionamiento extends JFrame {
          * panelNulo.setBackground(Color.WHITE);
          */
 
-    }
-
-    private void actualizarEstadoBotonIngresar() {
-        boolean hayCocheraSeleccionada = numeroCocheraSeleccionada > 0;
-        boolean horaIngresada = horaIngreso.getText() != null && !horaIngreso.getText().isEmpty();
-        boolean patenteIngresada = patente.getText() != null && !patente.getText().trim().isEmpty();
-
-        botonIngresar.setEnabled(hayCocheraSeleccionada && horaIngresada && patenteIngresada);
     }
 
     private ImageIcon escalarIcono(String ruta, int ancho, int alto) {
@@ -272,7 +252,6 @@ public class GUIEstacionamiento extends JFrame {
              * y las etiquetas correspondientes (VER IMAGENES DEL ENUNCIADO).
              */
             panelPrincipal.setVisible(true); // muestra el panel principal al seleccionar una cochera
-            actualizarEstadoBotonIngresar();
             etiqueCocheraSeleccionada.setText("No hay cocheras ocupadas seleccionadas"); // muestra la cochera seleccionada
             etiquetaNuevaReserva.setText("Nuevo acceso a cocheras"); // reinicia el texto de la etiqueta de nueva reserva
 
@@ -325,20 +304,24 @@ public class GUIEstacionamiento extends JFrame {
                 int hora = Integer.parseInt(partes[0]); // convierte la hora a entero
                 int minutos = Integer.parseInt(partes[1]); // convierte los minutos a entero
 
-                Hora horaIngresoVehiculo = new Hora(hora, minutos); // crea el objeto de hora de ingreso
-                Vehiculo vehiculo = new Vehiculo(horaIngresoVehiculo, numeroCocheraSeleccionada, pat); // crea el vehículo con los datos ingresados
+                if (hora >= 7 && hora < 22 && minutos >= 0 && minutos < 60) {
+                    Hora horaIngresoVehiculo = new Hora(hora, minutos); // crea el objeto de hora de ingreso
+                    Vehiculo vehiculo = new Vehiculo(horaIngresoVehiculo, numeroCocheraSeleccionada, pat); // crea el vehículo con los datos ingresados
 
-                // intenta asignar el vehículo a la cochera
-                estacionamiento.ingresarVehiculo(vehiculo, numeroCocheraSeleccionada);
-                cocheras[numeroCocheraSeleccionada - 1].setIcon(escalarIcono("imagenes/parking-ocupado.png", 80, 80)); // cambia el icono a ocupado
-                JOptionPane.showMessageDialog(null, "Ingreso registrado con exito", "Exito", JOptionPane.INFORMATION_MESSAGE); // muestra confirmación de ingreso
+                    // intenta asignar el vehículo a la cochera
+                    estacionamiento.ingresarVehiculo(vehiculo, numeroCocheraSeleccionada);
+                    cocheras[numeroCocheraSeleccionada - 1].setIcon(escalarIcono("imagenes/parking-ocupado.png", 80, 80)); // cambia el icono a ocupado
+                    JOptionPane.showMessageDialog(null, "Ingreso registrado con exito", "Exito", JOptionPane.INFORMATION_MESSAGE); // muestra confirmación de ingreso
 
-                horaIngreso.setText(""); // limpia el campo de hora
-                patente.setText(""); // limpia el campo de patente
-                nroCochera.setText("Seleccionar cochera"); // reinicia la etiqueta de cochera
-                numeroCocheraSeleccionada = -1; // deja sin cochera seleccionada
-                etiqueCocheraSeleccionada.setText("No hay cocheras ocupadas seleccionadas"); // reinicia el texto de la cochera
-                horaEgreso.setText("Sin egreso"); // reinicia la hora de egreso
+                    horaIngreso.setText(""); // limpia el campo de hora
+                    patente.setText(""); // limpia el campo de patente
+                    nroCochera.setText("Seleccionar cochera"); // reinicia la etiqueta de cochera
+                    numeroCocheraSeleccionada = -1; // deja sin cochera seleccionada
+                    etiqueCocheraSeleccionada.setText("No hay cocheras ocupadas seleccionadas"); // reinicia el texto de la cochera
+                    horaEgreso.setText("Sin egreso"); // reinicia la hora de egreso
+                } else {
+                    JOptionPane.showMessageDialog(null, "Debe ingresar una hora de ingreso y patente valida.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
