@@ -100,6 +100,7 @@ public class GUIEstacionamiento extends JFrame {
             panelEstacionamiento.add(cocheras[i]);
             this.setVisible(true);
         }
+        
         /*
          * - Se crea cada uno de los botones correspondientes a la cochera
          * - Se modifica el texto, la posicion del texto (centro-abajo), el color
@@ -288,10 +289,12 @@ public class GUIEstacionamiento extends JFrame {
              * Si alguno de los datos ingresados es incorrecto, se
              * muestra un mensaje de dialogo
              */
+
             if (hora_min_ingreso.equals("__:__") || pat.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Debe ingresar una hora de ingreso y patente valida.", "Error",
                         JOptionPane.ERROR_MESSAGE);
             } else {
+
                 /*
                  * - Si los datos son correctos, se debe crear un nuevo
                  * vehiculo para ingresar en el estacionamiento.
@@ -344,7 +347,6 @@ public class GUIEstacionamiento extends JFrame {
                 estacionamiento.egresarVehiculo(numeroCocheraSeleccionada); // libera la cochera en el estacionamiento
                 cocheras[numeroCocheraSeleccionada - 1].setIcon(escalarIcono("imagenes/parking-libre.png", 80, 80)); // cambia el icono a libre
 
-                /* horaEgreso.setText(horaSalida.toString()); */ // muestra la hora de egreso
                 nroCochera.setText("Seleccionar cochera"); // reinicia la etiqueta de cochera
                 etiqueCocheraSeleccionada.setText("Seleccione una cochera"); // reinicia la información mostrada
                 numeroCocheraSeleccionada = -1; // deja sin cochera seleccionada
